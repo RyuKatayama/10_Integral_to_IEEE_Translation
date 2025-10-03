@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インテグラル理論 → IEEE 42010への圏論的翻訳</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            width: 1400px;
+            height: 788px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 50px 60px;
+            display: none;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide-header h1 {
+            font-size: 2em;
+            color: #1a202c;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide-header .subtitle {
+            font-size: 1.2em;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .content-section {
+            margin: 25px 0;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.7em;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            background: #f7fafc;
+        }
+
+        tr:nth-child(even) td {
+            background: #edf2f7;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 25px 0;
+            gap: 15px;
+        }
+
+        .process-box {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-width: 200px;
+            flex: 1;
+        }
+
+        .process-box .title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .process-box .desc {
+            font-size: 0.9em;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+            border-left: 6px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .key-concept-box {
+            background: linear-gradient(135deg, #e8f4f8 0%, #b8e6f5 100%);
+            border: 3px solid #3498db;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .preservation-box {
+            background: linear-gradient(135deg, #d4edda 0%, #a3d9a5 100%);
+            border: 3px solid #28a745;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .transformation-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 3px solid #2196f3;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .integral-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border: 3px solid #8b5cf6;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .ieee-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 3px solid #4caf50;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .quadrant-mini {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            margin: 15px 0;
+            height: 200px;
+            font-size: 0.75em;
+        }
+
+        .quadrant {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .quadrant-i {
+            background: linear-gradient(135deg, #fef5e7 0%, #fdeaa8 100%);
+            border-color: #f39c12;
+        }
+
+        .quadrant-it {
+            background: linear-gradient(135deg, #e8f4f8 0%, #b8e6f5 100%);
+            border-color: #3498db;
+        }
+
+        .quadrant-we {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            border-color: #e91e63;
+        }
+
+        .quadrant-its {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-color: #4caf50;
+        }
+
+        .layer-box {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.8em;
+        }
+
+        .layer-title {
+            font-size: 1em;
+            font-weight: bold;
+            color: #5a67d8;
+            margin-bottom: 6px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            color: #a0aec0;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        ul li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-size: 0.8em;
+        }
+
+        strong {
+            color: #2d3748;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1em;
+            border: 2px solid #667eea;
+        }
+
+        .stakeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stakeholder-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.7em;
+        }
+
+        .stakeholder-card h5 {
+            color: #5a67d8;
+            margin-bottom: 4px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: タイトル -->
+        <div class="slide active">
+            <div class="slide-header">
+                <h1>インテグラル理論 → IEEE 42010</h1>
+                <div class="subtitle">圏論的翻訳メカニズムの実例</div>
+            </div>
+
+            <div class="key-concept-box">
+                <h3 style="color: #2c5282; margin-bottom: 15px; font-size: 1.3em;">翻訳の全体像</h3>
+                <div class="formula">
+                    翻訳 = π_IEEE ∘ 変換_{全象限→Its} ∘ embed_Integral
+                </div>
+                <p style="margin-top: 15px; font-size: 1.1em; color: #2d3748; line-height: 1.8;">
+                    包括的な統合理論を、<br>
+                    システム工学の技術設計理論へと<br>
+                    <strong style="color: #667eea;">次元圧縮しながら変換</strong>する
+                </p>
+            </div>
+
+            <div class="process-flow">
+                <div class="process-box" style="background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-color: #8b5cf6;">
+                    <div class="title" style="color: #6b21a8;">ステップ1</div>
+                    <div class="desc">埋め込み<br>Embedding</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-box" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); border-color: #667eea;">
+                    <div class="title" style="color: #4c51bf;">ステップ2</div>
+                    <div class="desc">象限変換<br>Transformation</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="process-box" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-color: #4caf50;">
+                    <div class="title" style="color: #2e7d32;">ステップ3</div>
+                    <div class="desc">射影<br>Projection</div>
+                </div>
+            </div>
+
+            <div class="integral-box">
+                <h3 style="color: #6b21a8; margin-bottom: 10px;">事例: 日本における外国人受け入れの是非</h3>
+                <p style="line-height: 1.7;">
+                    <strong>背景:</strong> 少子高齢化による労働力不足（都バス200路線廃止、串カツ店・コンビニのベトナム人労働者）vs 文化的摩擦（川口市クルド人問題）、安全保障懸念（外資による土地購入）<br>
+                    <strong>インテグラル理論:</strong> 4象限×5要素構造での統合的理解<br>
+                    <strong>IEEE 42010:</strong> 全ステークホルダー要求を満たすシステム設計
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <strong style="font-size: 1.2em;">本スライドの構成：</strong><br>
+                スライド2: ステップ1 - インテグラル理論の4象限分析<br>
+                スライド3: ステップ2 - 全象限からIts象限への変換<br>
+                スライド4: ステップ3 - IEEE 42010でのステークホルダー要求<br>
+                スライド5: 多層的システム・アーキテクチャ（3層×3段階）<br>
+                スライド6: 地域適応・発達段階包含設計<br>
+                スライド7: 完全な翻訳例と構造保存性の検証
+            </div>
+
+            <div class="slide-number">1/7</div>
+        </div>
+
+        <!-- Slide 2: ステップ1 埋め込み - 4象限分析 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>ステップ1: 埋め込み (Embedding)</h1>
+                <div class="subtitle">embed_Integral: インテグラル理論 → M⁶⁵|全象限</div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">4象限での統合的理解</div>
+                
+                <div class="quadrant-mini">
+                    <div class="quadrant quadrant-i">
+                        <strong style="color: #d68910;">I象限（個人内面）</strong><br>
+                        ・串カツ店主: 不安→共感（意識発達）<br>
+                        ・川口住民: 恐怖・罪悪感・葛藤<br>
+                        ・ベトナム人労働者: 希望・孤独・屈辱<br>
+                        ・発達段階: 慣習的→後慣習的→統合的
+                    </div>
+                    <div class="quadrant quadrant-it">
+                        <strong style="color: #2c5282;">It象限（個人外面）</strong><br>
+                        ・労働力データ: コンビニ7%、建設10万人<br>
+                        ・健康被害: 長時間労働、劣悪住環境<br>
+                        ・スキル: 日本語能力、専門技能<br>
+                        ・行動パターンの変化
+                    </div>
+                    <div class="quadrant quadrant-we">
+                        <strong style="color: #c2185b;">We象限（集合内面）</strong><br>
+                        ・文化的発達段階: 排外主義→伝統重視→人権重視→多文化共生<br>
+                        ・地域文化: 分断（川口）vs統合（浜松）<br>
+                        ・世代間価値観対立<br>
+                        ・集合的アイデンティティの再構築
+                    </div>
+                    <div class="quadrant quadrant-its">
+                        <strong style="color: #2e7d32;">Its象限（集合外面）</strong><br>
+                        ・入管制度: 技能実習の構造的問題<br>
+                        ・労働市場: 産業別依存度<br>
+                        ・社会保障・教育の不備<br>
+                        ・安全保障: 土地購入問題
+                    </div>
+                </div>
+            </div>
+
+            <div class="integral-box">
+                <h3 style="color: #6b21a8; margin-bottom: 10px;">5要素構造の統合</h3>
+                <ul style="font-size: 0.85em;">
+                    <li><strong>Quadrants:</strong> 上記4象限すべて</li>
+                    <li><strong>Levels:</strong> 発達段階（排外主義→伝統重視→人権重視→多文化共生）</li>
+                    <li><strong>Lines:</strong> 認知・感情・道徳・文化ラインの不均等発達</li>
+                    <li><strong>States:</strong> 恐怖状態、共感状態、対立状態、統合状態</li>
+                    <li><strong>Types:</strong> 保守型、革新型、実利型、理想型</li>
+                </ul>
+            </div>
+
+            <div class="key-concept-box">
+                <h3 style="color: #2c5282; margin-bottom: 10px;">インテグラル理論の包括性</h3>
+                <p style="line-height: 1.7; font-size: 0.95em;">
+                    外国人受け入れ問題は、単なる「労働力不足の解決」（Its象限）でも、「文化的寛容」（We象限）でもなく、<strong>4象限すべて、5要素構造全体にわたる統合的課題</strong>である。
+                </p>
+            </div>
+
+            <div class="slide-number">2/7</div>
+        </div>
+
+        <!-- Slide 3: ステップ2 象限変換 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>ステップ2: 象限変換 (Transformation)</h1>
+                <div class="subtitle">変換: M⁶⁵|全象限 → M⁶⁵|Its</div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">統合的洞察の技術要求への変換</div>
+                <table style="font-size: 0.75em;">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">要素</th>
+                            <th style="width: 35%;">全象限での表現</th>
+                            <th style="width: 35%;">Its象限への変換</th>
+                            <th style="width: 15%;">変換の性質</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Observer</strong></td>
+                            <td>統合的自己(全象限で経験)</td>
+                            <td>システム利害関係者(Stakeholder)</td>
+                            <td style="color: #d32f2f; font-weight: bold;">統合主体→設計参加者</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Focus</strong></td>
+                            <td>統合的課題(4象限×5要素)</td>
+                            <td>ステークホルダー要求(Concern)</td>
+                            <td style="color: #d32f2f; font-weight: bold;">多次元課題→技術要求</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Method</strong></td>
+                            <td>統合的実践</td>
+                            <td>システム設計方法論</td>
+                            <td style="color: #d32f2f; font-weight: bold;">統合実践→設計手法</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Construction</strong></td>
+                            <td>統合的理解</td>
+                            <td>アーキテクチャ設計</td>
+                            <td style="color: #d32f2f; font-weight: bold;">理解→技術仕様</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Target</strong></td>
+                            <td>統合的意識</td>
+                            <td>最適システム</td>
+                            <td style="color: #d32f2f; font-weight: bold;">意識発達→最適化</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="transformation-box">
+                <h3 style="color: #1565c0; margin-bottom: 10px;">4象限から技術要求への変換例</h3>
+                <table style="font-size: 0.8em; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">インテグラル理論での洞察</th>
+                            <th style="width: 50%;">IEEE 42010での技術要求</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>I象限: 店主の意識変容、川口住民の葛藤</td>
+                            <td>Stakeholder「地域住民・雇用者」のConcern: 安心・共生</td>
+                        </tr>
+                        <tr>
+                            <td>It象限: 労働力データ、健康被害</td>
+                            <td>システム要求: 労働力確保、健康安全保障</td>
+                        </tr>
+                        <tr>
+                            <td>We象限: 文化的発達段階の多様性</td>
+                            <td>多様な価値観を包含する制度設計</td>
+                        </tr>
+                        <tr>
+                            <td>Its象限: 入管制度の構造的問題</td>
+                            <td>制度・システムの再設計要求</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="slide-number">3/7</div>
+        </div>
+
+        <!-- Slide 4: ステップ3 射影 - ステークホルダー要求 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>ステップ3: 射影 (Projection)</h1>
+                <div class="subtitle">π_IEEE: M⁶⁵|Its → IEEE 42010 - ステークホルダー要求</div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">ステークホルダー要求ビュー（9つのステークホルダー）</div>
+                
+                <div class="stakeholder-grid">
+                    <div class="stakeholder-card">
+                        <h5>地域住民（日本人）</h5>
+                        <strong>位置:</strong> I象限（不安）/We象限（伝統）<br>
+                        <strong>要求:</strong> 治安維持、文化的摩擦最小化、多言語情報
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>外国人労働者</h5>
+                        <strong>位置:</strong> I象限（孤独・屈辱）/It象限（健康）<br>
+                        <strong>要求:</strong> 人権保障、日本語教育、住環境質保証
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>雇用者（企業）</h5>
+                        <strong>位置:</strong> It象限（労働力）/Its象限（コスト）<br>
+                        <strong>要求:</strong> 安定的労働力、採用簡素化、コスト予測可能性
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>自治体</h5>
+                        <strong>位置:</strong> We象限（地域文化）/Its象限（財政）<br>
+                        <strong>要求:</strong> 財政支援、ベストプラクティス共有、柔軟運用
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>政府</h5>
+                        <strong>位置:</strong> Its象限（制度）/We象限（国民統合）<br>
+                        <strong>要求:</strong> 労働力需給最適化、安全保障、社会統合
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>教育機関</h5>
+                        <strong>位置:</strong> I象限（子供発達）/We象限（多様性）<br>
+                        <strong>要求:</strong> 就学保障、日本語教育、いじめ防止
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>医療機関</h5>
+                        <strong>位置:</strong> It象限（健康）/We象限（コミュニケーション）<br>
+                        <strong>要求:</strong> 多言語通訳、健康保険加入、メンタルヘルス
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>警察</h5>
+                        <strong>位置:</strong> Its象限（治安）/We象限（信頼）<br>
+                        <strong>要求:</strong> コミュニティ信頼構築、多言語対応
+                    </div>
+
+                    <div class="stakeholder-card">
+                        <h5>NGO</h5>
+                        <strong>位置:</strong> I象限（共感）/We象限（人権文化）<br>
+                        <strong>要求:</strong> 支援ネットワーク、政策提言反映
+                    </div>
+                </div>
+            </div>
+
+            <div class="ieee-box">
+                <h3 style="color: #2e7d32; margin-bottom: 10px;">IEEE 42010での統合</h3>
+                <p style="line-height: 1.7; font-size: 0.95em;">
+                    インテグラル理論の4象限分析が、IEEE 42010では<strong>9つのステークホルダーのConcern（関心事・要求）</strong>として統合される。各象限の洞察が、技術的要求仕様として形式化される。
+                </p>
+            </div>
+
+            <div class="slide-number">4/7</div>
+        </div>
+
+        <!-- Slide 5: 多層的アーキテクチャ -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>多層的システム・アーキテクチャ</h1>
+                <div class="subtitle">3層×3段階マトリクス設計</div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">3層構造アーキテクチャ</div>
+                
+                <div class="layer-box">
+                    <div class="layer-title">Layer 1: 短期労働層（技能実習・特定技能1号）</div>
+                    <strong>対象:</strong> 単純労働、3-5年滞在<br>
+                    <strong>要求仕様:</strong> 転職の自由拡大、日本語N4必須、住環境基準、健康保険100%、帰国支援
+                </div>
+
+                <div class="layer-box">
+                    <div class="layer-title">Layer 2: 中期定住層（特定技能2号・高度人材）</div>
+                    <strong>対象:</strong> 専門技能、5-10年滞在、家族帯同可<br>
+                    <strong>要求仕様:</strong> 日本語N3以上、家族日本語教育、子供教育保障、永住権パス明確化、地域コミュニティ参加
+                </div>
+
+                <div class="layer-box">
+                    <div class="layer-title">Layer 3: 長期統合層（永住者・帰化者）</div>
+                    <strong>対象:</strong> 永住意思、日本社会の完全な一員<br>
+                    <strong>要求仕様:</strong> 日本語N2以上、参政権段階的付与、多文化アイデンティティ尊重、差別禁止法整備
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">3段階プロセス</div>
+                <table style="font-size: 0.75em;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">段階</th>
+                            <th style="width: 75%;">プロセス内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Stage 1: 入国前</strong></td>
+                            <td>日本語教育（N4まで）、文化オリエンテーション、権利義務説明、悪質ブローカー排除</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stage 2: 適応期（1年）</strong></td>
+                            <td>到着時オリエンテーション、メンター制度、集中日本語教育、交流イベント、24時間多言語相談窓口</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stage 3: 定着・統合期</strong></td>
+                            <td>継続日本語教育、職業訓練、地域社会参加、文化的アイデンティティ保持、次Layerへの移行支援</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="slide-number">5/7</div>
+        </div>
+
+        <!-- Slide 6: 地域適応・発達段階包含 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>地域適応・発達段階包含設計</h1>
+                <div class="subtitle">インテグラル理論の洞察をシステム仕様へ</div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">地域適応ビュー（4タイプ）</div>
+                
+                <table style="font-size: 0.7em;">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">地域タイプ</th>
+                            <th style="width: 30%;">特性</th>
+                            <th style="width: 50%;">適応戦略</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Type A: 大都市圏</strong></td>
+                            <td>既に多文化化、インフラ充実</td>
+                            <td>多言語行政標準装備、多文化共生センター、多様性を強みとして発信</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type B: 地方都市</strong></td>
+                            <td>製造業依存度高</td>
+                            <td>企業・自治体協働、外国人学校公的支援、多文化共生を地域アイデンティティに</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type C: 農村部</strong></td>
+                            <td>季節労働、高齢化</td>
+                            <td>短期労働者受入システム、農家マッチング、空き家活用、交流促進</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type D: 課題地域</strong></td>
+                            <td>急激増加、摩擦顕在化</td>
+                            <td>緊急対策チーム、コミュニティリーダー対話、多言語ルール周知、警察・自治体・NGO連携</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">発達段階包含ビュー</div>
+                
+                <div class="integral-box">
+                    <h4 style="color: #6b21a8; margin-bottom: 6px; font-size: 0.95em;">システムはすべての発達段階の人々を包含</h4>
+                    <ul style="font-size: 0.8em;">
+                        <li><strong>前慣習的段階（排外主義）:</strong> ヘイトスピーチ規制、教育プログラム、対話可能性維持</li>
+                        <li><strong>慣習的段階（伝統重視）:</strong> 日本伝統文化保護施策、「日本らしさと多様性の両立」メッセージ</li>
+                        <li><strong>後慣習的段階（人権重視）:</strong> 国際人権基準遵守、差別禁止法、政治参加拡大</li>
+                        <li><strong>統合的段階（多文化共生）:</strong> 日本人と外国人が共に新文化創造、多様性を社会の強みに</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ieee-box">
+                <h3 style="color: #2e7d32; margin-bottom: 10px;">目標アーキテクチャ（2030年）</h3>
+                <p style="font-size: 0.85em; line-height: 1.5;">
+                    <strong>多層的・段階的・地域適応型・発達段階包含型 外国人受け入れ統合管理システム</strong><br>
+                    ・外国人労働者: 300万人（現180万人）<br>
+                    ・外国人児童就学率: 100%（現90%）<br>
+                    ・多文化共生肯定率: 70%（現50%）<br>
+                    ・外国人生活満足度: 80%（現60%）
+                </p>
+            </div>
+
+            <div class="slide-number">6/7</div>
+        </div>
+
+        <!-- Slide 7: 完全な翻訳例と検証 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>完全な翻訳例と構造保存性の検証</h1>
+                <div class="subtitle">翻訳 = π_IEEE ∘ 変換_{全象限→Its} ∘ embed_Integral</div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">翻訳における本質的変化</div>
+                
+                <table style="font-size: 0.8em;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">側面</th>
+                            <th style="width: 37.5%;">インテグラル理論</th>
+                            <th style="width: 37.5%;">IEEE 42010</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>焦点</strong></td>
+                            <td>全象限(I∪It∪We∪Its)×5要素</td>
+                            <td>Its象限(システム・制度)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>主体</strong></td>
+                            <td>統合的自己(全象限で経験・発達)</td>
+                            <td>システム利害関係者</td>
+                        </tr>
+                        <tr>
+                            <td><strong>意識・感情</strong></td>
+                            <td>I象限で詳細に記述</td>
+                            <td>Concernとして抽象化</td>
+                        </tr>
+                        <tr>
+                            <td><strong>発達段階</strong></td>
+                            <td>明示的に重視</td>
+                            <td>「多様な価値観」として包含</td>
+                        </tr>
+                        <tr>
+                            <td><strong>目標</strong></td>
+                            <td>統合的意識の発達</td>
+                            <td>全要求を満たす最適システム</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div class="preservation-box">
+                    <h3 style="color: #2e7d32; margin-bottom: 10px;">保存された構造</h3>
+                    <ul style="font-size: 0.85em;">
+                        <li>6要素プロセスの循環構造</li>
+                        <li>4象限分析は多様なStakeholderのConcernとして統合</li>
+                        <li>発達段階の洞察は「多様な価値観包含設計」として技術要求化</li>
+                    </ul>
+                </div>
+
+                <div class="transformation-box">
+                    <h3 style="color: #1565c0; margin-bottom: 10px;">次元圧縮された要素</h3>
+                    <ul style="font-size: 0.85em;">
+                        <li>象限: 全象限 → Its象限（ただし全象限の洞察を反映）</li>
+                        <li>次元: 30次元 → システム要求仕様</li>
+                        <li>意識・感情 → Concern（要求）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-concept-box" style="margin-top: 15px;">
+                <h3 style="color: #2c5282; margin-bottom: 10px;">翻訳の本質</h3>
+                <p style="line-height: 1.6; font-size: 0.95em;">
+                    <strong>インテグラル理論:</strong> 串カツ店主の<span style="color: #d68910;">意識変容</span>（I象限）、ベトナム人の<span style="color: #d68910;">孤独</span>（I象限）、川口市の<span style="color: #c2185b;">文化的分断</span>（We象限）、<span style="color: #2e7d32;">入管制度の構造的問題</span>（Its象限）<br><br>
+                    <strong>IEEE 42010:</strong> これらすべてが、<strong>9つのステークホルダーのConcern（技術要求）</strong>として統合される。<br>
+                    地域住民の「安心」、外国人労働者の「人権保障」、雇用者の「安定的労働力」、自治体の「財政支援」...<br><br>
+                    インテグラル理論の<strong>30次元統合空間での理解</strong>が、IEEE 42010の<strong>実装可能なシステム仕様</strong>へと変換される。<br>
+                    次元は圧縮されるが、全象限の洞察は<strong>システム設計に反映</strong>される。
+                </p>
+            </div>
+
+            <div class="slide-number">7/7</div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn">← 前へ</button>
+        <button class="nav-btn" id="nextBtn">次へ →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        });
+
+        showSlide(0);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        });
+    </script>
+</body>
+</html>
